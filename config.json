@@ -1,0 +1,98 @@
+{
+  // إعدادات خادم واجهة برمجة التطبيقات (API Server)
+  // تسمح بالوصول إلى واجهة الويب لمراقبة البوت
+  "api_server": {
+    "enabled": true,
+    "listen_ip_address": "0.0.0.0", // يسمح بالوصول من أي مكان (جيد للاستضافة على سيرفر)
+    "listen_port": 8080,         // المنفذ الافتراضي لواجهة الويب
+    "verbosity": "error",        // مستوى تفصيل السجلات (يمكن تغييره لـ 'info' للمزيد)
+    "jwt_secret_key": "b473fae8937a6cce41cd7ef926d842cf59e5c86b7283fa221aaec42759cd3452" // مفتاح سري للأمان
+  },
+
+  // إعدادات وضع التشغيل
+  // IMPORTANT: dry_run: true تعني التداول الورقي (بدون أموال حقيقية)
+  "dry_run": true,
+  "dry_run_wallet": 1000, // رصيد افتراضي يبدأ به البوت في وضع التداول الورقي (بالـ stake_currency)
+
+  // إعدادات البورصة
+  "exchange": {
+    "name": "binance", // اسم البورصة (يمكن أن تكون binance, kraken, bybit, وغيرها)
+    // مفاتيح الـ API - يتم سحبها من متغيرات البيئة لأغراض الأمان
+    // لا داعي لتعيينها يدوياً هنا في وضع dry_run
+    "key": "${BINANCE_API_KEY}",
+    "secret": "${BINANCE_API_SECRET}",
+    "ccxt_config": {},
+    "ccxt_async_config": {},
+    // قائمة بأزواج العملات المسموح بالتداول بها
+    "pair_whitelist": [
+      "BTC/USDT",
+      "ETH/USDT",
+      "DOGE/USDT"
+    ],
+    // قائمة بأزواج العملات المحظورة
+    "pair_blacklist": [
+      "BNB/BTC",
+      "USDT/BTC" // مثال: قد لا ترغب بتداول أزواج USDT مقابل عملات أخرى غير العملة الأساسية
+    ]
+  },
+
+  // إعدادات Telegram Bot
+  // لإرسال الإشعارات وتلقي الأوامر عبر Telegram
+  "telegram": {
+    "enabled": true,
+    "token": "7790914292:AAFxwZ8KUyvItaOuJYlSxJ9gJ_4A1r8lGk", // توكن بوت Telegram الخاص بك
+    "chat_id": "1635562675", // معرف الدردشة الخاص بك على Telegram
+    "use_polling": true // طريقة تلقي التحديثات من Telegram
+  },
+
+  // إعدادات عامة للبوت
+  "bot_name": "MyFreqtradeBot", // اسم لبوتك
+  "max_open_trades": 3,      // الحد الأقصى لعدد الصفقات المفتوحة في نفس الوقت
+  "stake_currency": "USDT",  // العملة الأساسية التي سيتم استخدامها للشراء (مثلاً: شراء BTC بـ USDT)
+  "stake_amount": "unlimited", // حجم الرهان لكل صفقة. 'unlimited' خطير جداً للتداول الحقيقي!
+                               // استخدم '10' أو '20' مثلاً للتداول الحقيقي.
+  "strategy": "SimpleRSIStrategy", // اسم ملف الاستراتيجية (بدون .py)
+  "timeframe": "1h",              // الإطار الزمني الذي ستعمل عليه الاستراتيجية
+
+  // إعدادات التداول المباشر (LIVE TRADING)
+  // هذه الإعدادات لا تعمل في وضع dry_run
+  "order_types": {
+    "buy": "limit",         // نوع أمر الشراء (limit/market)
+    "sell": "limit",        // نوع أمر البيع (limit/market)
+    "stoploss": "market",   // نوع أمر وقف الخسارة (limit/market)
+    "stoploss_on_exchange": true, // تنفيذ وقف الخسارة على البورصة مباشرة (موصى به)
+    "takeprofit": "limit", // نوع أمر جني الأرباح
+    "takeprofit_on_exchange": true // تنفيذ جني الأرباح على البورصة مباشرة
+  },
+
+  // إعدادات الحماية من الانهيار (Protection)
+  // تساعد في منع البوت من التداول في ظروف سوق غير مواتية
+  "protections": [
+    {
+      "method": "CooldownPeriod",
+      "stop_duration_candles": 1
+    },
+    {
+      "method": "LowProfitPairs",
+      "lookback_period_candles": 6,
+      "trade_limit": 2,
+      "min_rate_of_change": 0.005
+    }
+  ],
+
+  // إعدادات أخرى (يمكن تركها كما هي بشكل عام)
+  "initial_state": "running",
+  "edge": {
+    "enabled": false
+  },
+  "minimal_roi": {
+    "0": 0.02,
+    "40": 0.015,
+    "60": 0.01,
+    "300": 0.005
+  },
+  "position_stacking": "always",
+  "process_throttle_secs": 5,
+  "exchange_throttle_secs": 0.1,
+  "fiat_display_currency": "USD"
+}
